@@ -44,6 +44,7 @@ void quaternionTest();
 void hashTest();
 void determinantTest();
 void slerpTest();
+void PiTestIEEE754();
 
 /// Utility print() calls for glm to Scott's math library format 
 void glmPrintM4(glm::mat4  mat, const char* comment = nullptr);
@@ -62,11 +63,19 @@ using namespace std;
 
 
 int main(int argc, char* argv[]) {
-	planeTest();
-
-
+	PiTestIEEE754();
+	
 }
 
+void PiTestIEEE754() {
+	/// This is the value of pi accurate to 18 digits past the decimal point
+	float pi = static_cast<float>(3.14159265358979323); /// type cast it to float 
+	printf("3.14159265358979323 vs.\n"); /// look at the value 
+	/// IEEE754 (float) can only express pi as 3.141592 accurately 
+	/// Consider precision vs accuracy
+	printf("%.18f\n",pi); 
+	printf("%.18f\n",2.0f*acos(0.0f));
+}
 
 void slerpTest() {
 	Euler e1(90.0f, 0.0f, 0.0f);
