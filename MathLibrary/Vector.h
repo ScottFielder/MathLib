@@ -3,36 +3,334 @@
 #include <iostream>
 #include <string> /// Used for passing exceptions 
 
-		///
-		/// Vec3 definitions followed by Vec4 
-		/// There are notes at the bottom of this file you might want to read
-		///
+///
+/// Vec3 definitions followed by Vec4 
+/// There are notes at the bottom of this file you might want to read
+///
 
 namespace  MATH {
 
-/// This is used in normalizing vectors. Dividing by zero is a well known
-/// problem but dividing by nearly zero is also a problem. 1.0x10-7 is very
-/// small in "float" percision. 
+	/// This is used in normalizing vectors. Dividing by zero is a well known
+	/// problem but dividing by nearly zero is also a problem. 1.0x10-7 is very
+	/// small in "float" percision. 
 
-	#ifndef VERY_SMALL
-	#define VERY_SMALL 1.0e-7f
-	#endif
+#ifndef VERY_SMALL
+#define VERY_SMALL 1.0e-7f
+#endif
 
-	#ifndef VERY_CLOSE_TO_ONE 
-	#define	VERY_CLOSE_TO_ONE 0.9999f
-	#endif
+#ifndef VERY_CLOSE_TO_ONE 
+#define	VERY_CLOSE_TO_ONE 0.9999f
+#endif
+#ifndef M_PI
+#define M_PI 3.141592f
+#endif
 
-	#ifndef M_PI
-	#define M_PI 3.141592f
-	#endif
+#ifndef DEGREES_TO_RADIANS
+#define DEGREES_TO_RADIANS (M_PI / 180.0f)
+#endif	
 
-	#ifndef DEGREES_TO_RADIANS
-	#define DEGREES_TO_RADIANS static_cast<float>(M_PI / 180.0f)
-	#endif	
+#ifndef RADIANS_TO_DEGREES
+#define RADIANS_TO_DEGREES (180.0f / M_PI)
+#endif
 
-	#ifndef RADIANS_TO_DEGREES
-	#define RADIANS_TO_DEGREES static_cast<float>(180.0f / M_PI)
-	#endif
+/// I will need to forward declare the union Vec4 for the "Vec3(const Vec4& v)" 
+/// and "Vec3& operator = (const Vec4& v);" prototypes.  See the Vec3 code and the end of the 
+/// Vec4 for the body of the code
+	union Vec4;
+
+	union Vec3 {
+		struct {
+			float x, y, z;
+		};
+
+		struct {
+			float e032, e013, e021;
+		};
+
+		/// Just a little utility to populate a vector
+		void set(float x_, float y_, float z_) {
+			x = x_; y = y_; z = z_;
+		}
+
+		/// Here's a set of constructors
+		Vec3() {
+			set(0.0f, 0.0f, 0.0f);
+		}
+
+		Vec3(float x, float y, float z) {
+			set(x, y, z);
+		}
+
+		Vec3(const Vec3& v) {
+			set(v.x, v.y, v.z);
+		}
+
+		///////////////////////////////////////////////////////////
+		/// Operator overloads (see note 1 at the end of this file)
+		///////////////////////////////////////////////////////////
+
+		/// An assignment operator   
+		const Vec3& operator = (const Vec3& v) {
+			set(v.x, v.y, v.z);
+			return *this;
+		}
+
+		/// Now we can use the Vec3 like an array but we'll need two overloads
+		const float operator [] (int index) const {  /// This one is for reading the Vec3 as if where an array
+			return *(&x + index);
+		}
+
+		float& operator [] (int index) {	/// This one is for writing to the Vec3 as if where an array.  
+			return *(&x + index);					/// See note 2 at the end of this file about lvalues and rvalues
+		}
+
+		/// Add two Vec3s
+		const Vec3 operator + (const Vec3& v) const {
+			return Vec3(x + v.x, y + v.y, z + v.z);
+		}
+
+		/// Add a Vec3 to itself
+		const Vec3& operator += (const Vec3& v) {
+			x += v.x;
+			y += v.y;
+			z += v.z;
+			return *this;
+		}
+
+		/// Take the negative of a Vec3
+		const Vec3 operator - () const {
+			return Vec3(-x, -y, -z);
+		}
+
+		/// Subtract two Vec3s
+		const Vec3 operator - (const Vec3& v) const {
+			return Vec3(x - v.x, y - v.y, z - v.z);
+		}
+
+		/// Subtract a Vec 3 from itself
+		const Vec3& operator -= (const Vec3& v) {
+			x -= v.x;
+			y -= v.y;
+			z -= v.z;
+			return *this;
+		}
+
+		/// Multiply a Vec3 by a scalar
+		inline const Vec3  operator * (const float s) const {
+			return Vec3(s * x, s * y, s * z);
+		}
+
+
+		/// Multiply a scaler by a Vec3  It's the scalar first then the Vec3
+		/// Overloaded and a friend, ouch! It's the only way to make it work with a scalar first.
+		/// Friends are tricky, look them up. 
+		friend Vec3 operator * (const float s, const Vec3& v) {
+			return v * s;
+		}
+
+		/// Multiply a Vec3 by a scalar and assign it to itself
+		Vec3& operator *= (const float s) {
+			x *= s;
+			y *= s;
+			z *= s;
+			return *this;
+		}
+
+
+		/// Divide by a scalar - Watch for divide by zero issues
+		const Vec3 operator / (const float s) const {
+#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero 
+			if (fabs(s) < VERY_SMALL) {
+				std::string errorMsg = __FILE__ + __LINE__;
+				throw errorMsg.append(": Divide by nearly zero ");
+			}
+#endif
+			float r = 1.0f / s;
+			return *this * r;
+		}
+
+
+		inline Vec3& operator /= (const float s) {
+#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
+			if (std::fabs(s) < VERY_SMALL) {
+				std::string errorMsg = __FILE__ + __LINE__;
+				throw errorMsg.append(": Divide by nearly zero! ");
+
+			}
+#endif // DEBUG
+			float r = 1.0f / s;
+			*this *= r;
+			return *this;
+		}
+
+		void print(const char* comment = nullptr) const {
+			if (comment) printf("%s\n", comment);
+			printf("%1.8f %1.8f %1.8f\n", x, y, z);
+		}
+
+		///
+		/// Type conversion operators 
+		///
+		operator const float* () const {
+			return static_cast<const float*>(&x);
+		}
+
+		operator float* () {
+			return static_cast<float*>(&x);
+		}
+
+
+		/// Create a Vec3 from a Vec4 - This is a bit of trouble. 
+		/// The Vec4 definition has not been read yet so the compiler has no idea
+		/// about Vec4. Just above the Vec3 definition, I do a forward declaration of 
+		/// union Vec4. This allows this prototype to exist. The actual code for this 
+		/// constructor is listed just after the end of the Vec4 definition. 
+		inline Vec3(const Vec4& v);
+		inline Vec3& operator = (const Vec4& v); /// An assignment operator from a Vec4 
+
+	};
+
+	/// Vec4 definitions		
+	union Vec4 {
+		struct {
+			float x, y, z, w;
+		};
+		struct {
+			float  e032, e013, e021, e123;
+		};
+
+		inline void set(float x_, float y_, float z_, float w_) {
+			x = x_; y = y_; z = z_; w = w_;
+		}
+
+		/// Here's a set of constructors
+		Vec4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+		Vec4(float x_, float y_, float z_, float w_) : x(x_), y(y_), z(z_), w(w_) {}
+		Vec4(const Vec4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
+		Vec4(const Vec3& v, const float w_) : x(v.x), y(v.y), z(v.z), w(w_) {}
+		Vec4(const Vec3& v) :x(v.x), y(v.y), z(v.z), w(1.0f) {}
+
+		/// An assignment operator
+		inline Vec4& operator = (const Vec4& v) {
+			x = v.x;
+			y = v.y;
+			z = v.z;
+			w = v.w;
+			return *this;
+		}
+
+		/// See how I did it in the Vec3 definition 
+		inline float& operator [] (int index) {
+			return *(&x + index);
+		}
+		inline const float operator [] (int i) const {
+			return *(&x + i);
+		}
+
+		/// See the Vec3 definition 
+		inline Vec4 operator + (const Vec4& v) const {
+			return Vec4(x + v.x, y + v.y, z + v.z, w + v.w);
+		}
+
+
+		inline Vec4& operator += (const Vec4& v) {
+			x += v.x;
+			y += v.y;
+			z += v.z;
+			w += v.w;
+			return *this;
+		}
+
+
+		inline Vec4 operator - () const {
+			return Vec4(-x, -y, -z, -w);
+		}
+
+
+		inline Vec4 operator - (const Vec4& v) const {
+			return Vec4(x - v.x, y - v.y, z - v.z, v.w - w);
+		}
+
+
+		inline Vec4& operator -= (const Vec4& v) {
+			x -= v.x;
+			y -= v.y;
+			z -= v.z;
+			w -= v.w;
+			return *this;
+		}
+
+
+		inline Vec4 operator * (const float s) const {
+			return Vec4(s * x, s * y, s * z, s * w);
+		}
+
+
+		inline Vec4& operator *= (const float s) {
+			x *= s;
+			y *= s;
+			z *= s;
+			w *= s;
+			return *this;
+		}
+
+
+		friend Vec4 operator * (const float s, const Vec4& v) {
+			return v * s;
+		}
+
+
+		inline Vec4 operator / (const float s) const {
+#ifdef DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
+			if (std::fabs(s) < VERY_SMALL) {
+				std::string errorMsg = __FILE__ + __LINE__;
+				throw errorMsg.append(": Divide by nearly zero! ");
+			}
+#endif
+			float r = 1.0f / s;
+			return *this * r;
+		}
+
+		inline Vec4& operator /= (const float s) {
+#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
+			if (std::fabs(s) < VERY_SMALL) {
+				std::string errorMsg = __FILE__ + __LINE__;
+				throw errorMsg.append(": Divide by nearly zero! ");
+			}
+#endif // DEBUG
+
+			float r = 1.0f / s;
+			*this *= r;
+			return *this;
+		}
+
+		inline void print(const char* comment = nullptr) const {
+			if (comment) printf("%s\n", comment);
+			printf("%1.8f %1.8f %1.8f %1.8f\n", x, y, z, w);
+		}
+
+
+		/// Type conversion operators 
+		inline operator const float* () const {
+			return static_cast<const float*>(&x);
+		}
+
+		inline operator float* () {
+			return static_cast<float*>(&x);
+		}
+
+	};
+
+
+	/// These are defined in the Vec3 definition but because they have a Vec4 in them 
+	/// I can't code them until after the Vec4 definition
+	Vec3::Vec3(const Vec4& v) : x(v.x), y(v.y), z(v.z) {}
+	Vec3& Vec3::operator = (const Vec4& v) {
+		set(v.x, v.y, v.z);
+		return *this;
+	}
+
+
 
 	struct Vec2 {
 		float  x, y;
@@ -41,350 +339,57 @@ namespace  MATH {
 			x = x_; y = y_;
 		}
 		/// Here's a set of constructors
-		inline  Vec2(){
-			set(0.0f,0.0f);
+		inline  Vec2() {
+			set(0.0f, 0.0f);
 		}
 
-		inline Vec2( float x, float y ){
-			set(x,y);
+		inline Vec2(float x, float y) {
+			set(x, y);
 		}
 
 		/// A copy constructor
-		inline Vec2( const Vec2& v ) { 
-			set(v.x,v.y); 
+		inline Vec2(const Vec2& v) {
+			set(v.x, v.y);
 		}
 
 		///////////////////////////////////////////////////////////
 		/// Operator overloads (see note 1 at the end of this file)
 		///////////////////////////////////////////////////////////
-		inline Vec2& operator = (const Vec2& v){
-			set(v.x, v.y); 
+		inline Vec2& operator = (const Vec2& v) {
+			set(v.x, v.y);
 			return *this;
 		}
 
 		inline void print(const char* comment = nullptr) const {
 			if (comment) printf("%s\n", comment);
-			printf("%1.8f %1.8f\n", x,y);		  
-		}
-	};
-	
-
-	struct Vec3 {
-		float  x,y,z;	///  Structures are default public
-
-		/// Just a little utility to populate a vector
-		inline void set( float x_, float y_, float z_ ) {
-			x = x_; y = y_; z = z_; 
-		}
-
-		/// Here's a set of constructors
-		inline  Vec3(){
-			set(0.0f,0.0f,0.0f);
-		}
-
-		inline Vec3( float x, float y, float z ){
-			set(x,y,z);
-		}
-		
-		/// A copy constructor
-		inline Vec3( const Vec3& v ) { 
-			set(v.x,v.y,v.z); 
-		}
-
-		
-
-		///////////////////////////////////////////////////////////
-		/// Operator overloads (see note 1 at the end of this file)
-		///////////////////////////////////////////////////////////
-
-		/// An assignment operator   
-		inline Vec3& operator = (const Vec3& v){
-			set(v.x, v.y, v.z); 
-			return *this;
-		}
-
-		
-		/// Now we can use the Vec3 like an array but we'll need two overloads
-		inline const float operator [] ( int index) const {  /// This one is for reading the Vec3 as if where an array
-			return *(&x + index); 
-		}
-
-		inline float& operator [] ( int index ) {	/// This one is for writing to the Vec3 as if where an array.  
-			return *(&x + index);					/// See note 2 at the end of this file about lvalues and rvalues
-		}
-	
-
-		/// Add two Vec3s
-		inline const Vec3 operator + ( const Vec3& v ) const { 
-			return Vec3( x + v.x, y + v.y, z + v.z ); 
-		}
-
-		/// Add a Vec3 to itself
-		inline Vec3& operator += ( const Vec3& v ){ 
-			x += v.x;  
-			y += v.y;  
-			z += v.z;  
-			return *this; 
-		}
-
-		/// Take the negative of a Vec3
-		inline const Vec3 operator - () const  { 
-			return Vec3( -x, -y, -z ); 
-		}   
-
-		/// Subtract two Vec3s
-		inline const Vec3 operator - ( const Vec3& v ) const { 
-			return Vec3(x - v.x, y - v.y, z - v.z ); 
-		}
-
-		/// Subtract a Vec 3 from itself
-		inline Vec3& operator -= ( const Vec3& v ){ 
-			x -= v.x;  
-			y -= v.y;  
-			z -= v.z;  
-			return *this;
-		}
-
-		/// Multiply a Vec3 by a scalar
-		inline const Vec3  operator * ( const float s ) const { 
-			return Vec3(s*x, s*y, s*z ); 
-		}
-
-		
-		/// Multiply a scaler by a Vec3   It's the scalar first then the Vec3, can't overload the scalar. 
-		/// Overloaded and a friend, ouch! It's the only way to make it work with a scalar first.
-		/// Friends are tricky, look them up. This is a non-member function, it's not really part
-		/// of the Vec3 but it needs to be in here so it knows what a Vec3 is. 
-		inline friend Vec3 operator * ( const float s, const Vec3& v ) { 
-			return v * s; 
-		}
-
-		/// Multiply a Vec3 by a scalar and assign it to itself
-		inline Vec3& operator *= ( const float s ) { 
-			x *= s; 
-			y *= s;  
-			z *= s;  
-			return *this; 
-		}
-		
-
-		/// Divide by a scalar - Watch for divide by zero issues
-		inline const Vec3 operator / ( const float s ) const {
-	#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
-		if ( fabs(s) < VERY_SMALL ) {
-			std::string errorMsg = __FILE__ + __LINE__;
-			throw errorMsg.append(": Divide by nearly zero! ");	
-		}
-	#endif
-		float r = 1.0f / s;
-		return *this * r;
-		}
-
-
-		inline Vec3& operator /= ( const float s ) {
-#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
-		if ( std::fabs(s) < VERY_SMALL ) {
-			std::string errorMsg = __FILE__ + __LINE__;
-			throw errorMsg.append(": Divide by nearly zero! ");
-			
-		}
-#endif // DEBUG
-		float r = 1.0f / s;
-		*this *= r;
-		return *this;
-		}
-
-		inline void print(const char* comment = nullptr) const {
-			if (comment) printf("%s\n", comment);
-			printf("%1.8f %1.8f %1.8f\n", x,y,z);		  
-		}
-
-		///
-		/// Type conversion operators 
-		///
-		inline operator const float* () const {
-			return static_cast<const float*>(&x);
-		}
-
-		inline operator float* () {
-			return static_cast<float*>(&x);
+			printf("%1.8f %1.8f\n", x, y);
 		}
 	};
 
-
-		/// Vec4 definitions
-		/// I am intentionally creating a Vec4 from a Vec3 so I can pass a Vec4 into a Subroutine that wants a Vec3
-		/// in many cases this will be mathamatically OK, just be careful Vec4's are not quaternions
-		
-	struct Vec4: public Vec3 {
-		///float  x;	///
-		///float  y;	///  
-		///float  z;	/// From Vec3
-		float  w;
-
-		inline void set(float x_, float y_, float z_, float w_) {
-			x = x_; y = y_; z = z_; w = w_;
-		}
-
-		/// Here's a set of constructors
-		inline Vec4(){ 
-			set(0.0f,0.0f,0.0f,0.0f);
-		}
-		inline Vec4( float x_, float y_, float z_, float w_){ 
-			set(x_,y_,z_,w_);
-		} 
-		inline Vec4( const Vec4& v ) { 
-			set(v.x,v.y,v.z,v.w);
-		}
-		inline Vec4(const Vec3& v, const float w_) {
-			set(v.x,v.y,v.z,w_);
-		}
-		inline Vec4( const Vec3& v ) { 
-			set(v.x,v.y,v.z,1.0f);
-		}
-		
-		/// An assignment operator
-		inline Vec4& operator = (const Vec4& v){
-			set(v.x,v.y,v.z,v.w);
-			return *this;
-		}
-
-		/// See Vec3 definition 
-		inline float& operator [] ( int index ) { 
-			return *(&x + index); 
-		}
-		inline const float operator [] ( int i ) const { 
-			return *(&x + i); 
-		}
-
-		/// See Vec3 definition 
-		inline const Vec4 operator + ( const Vec4& v ) const { 
-			return Vec4( x + v.x, y + v.y, z + v.z, w + v.w ); 
-		}
-
-		/// See Vec3 definition 
-		inline Vec4& operator += ( const Vec4& v ){ 
-			x += v.x;
-			y += v.y;
-			z += v.z;
-			w += v.w;
-			return *this; 
-		}
-
-		//// See Vec3 definition 
-		inline const Vec4 operator - () const  { 
-			return Vec4( -x, -y, -z, -w );
-		}   
-
-		/// See Vec3 definition 
-		inline const Vec4 operator - ( const Vec4& v ) const { 
-			return Vec4( x - v.x, y - v.y, z - v.z, v.w - w);
-		}
-
-		/// See Vec3 definition 
-		inline Vec4& operator -= ( const Vec4& v ){ 
-			x -= v.x;
-			y -= v.y;
-			z -= v.z;
-			w -= v.w;
-			return *this;
-		}
-
-		/// See Vec3 definition 
-		inline const Vec4 operator * ( const float s ) const { 
-			return Vec4( s*x, s*y, s*z, s*w);
-		}
-
-		/// See Vec3 definition 
-		inline Vec4& operator *= ( const float s ) { 
-			x *= s;
-			y *= s;
-			z *= s;
-			w*= s;
-			return *this;
-		}
-
-		/// See Vec3 definition 
-		 friend const Vec4 operator * ( const float s, const Vec4& v ) { 
-			 return v * s; 
-		 }
-
-
-		inline const Vec4 operator / ( const float s ) const {
-#ifdef DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
-		if ( std::fabs(s) < VERY_SMALL ) {
-			std::string errorMsg = __FILE__ + __LINE__;
-			throw errorMsg.append(": Divide by nearly zero! ");
-		}
-#endif
-		float r = 1.0f / s;
-		return *this * r;
-		}
-
-		inline Vec4& operator /= ( const float s ) {
-	#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
-		if ( std::fabs(s) < VERY_SMALL ) {
-			std::string errorMsg = __FILE__ + __LINE__;
-			throw errorMsg.append(": Divide by nearly zero! ");
-		}
-	#endif // DEBUG
-
-		float r = 1.0f / s;
-		*this *= r;
-		return *this;
-		}
-
-		inline void print(const char* comment = nullptr) const { 
-			if (comment) printf("%s\n", comment);
-			printf("%1.8f %1.8f %1.8f %1.8f\n", x,y,z,w);		  
-		}
-
-		///
-		/// Type conversion operators 
-		///
-		inline operator const float* () const { 
-			return static_cast<const float*>( &x );
-		}
-
-		inline operator float* () { 
-			return static_cast<float*>( &x );
-		}
-
-	};
-	
 }
 
 #endif
 
 
-		/*** Note 1.
-		I know, I hate operator overloading as a general rule but a few make sense!! Just be careful and 
-		consistent. In the following code, I will overload many operators. I don't believe in 
-		overloading when the operator is less than obvious.  
-		For example, in this class, the relational operators (== != < > <= >=) might mean "in relation 
-		to their magnitude or direction" I'm just not sure. Just write a function to do that and don't make 
-		me guess what the operator might mean. Use the idea of "Least Astonishment" don't surprise me,
-		or shock me or anything else that will piss me or others off -SSF
-		***/
+/*** Note 1.
+I know, I hate operator overloading as a general rule but a few make sense!! Just be careful and
+be consistent. In the following code, I will overload many operators. I don't believe in
+overloading when the operator is less than obvious.
+For example, in this class, the relational operators (== != < > <= >=) might mean "in relation
+to their magnitude or direction" I'm just not sure. Just write a function to do that and don't make
+me guess what the operator might mean. Use the idea of "Least Astonishment" don't surprise me,
+or shock me or anything else that will piss me or others off -SSF
+***/
 
-		/*** Note 2.
-		In straight C programming, lvalues and rvalues literially means left and right assignments.  For example, 
-		int x = 5; x is the lvalue and 5 is the rvalue. Easy. In C++ it get a bit more tricky. The modern idea is
-		rvalues are temporary vaules residing in the registers of the CPU. lvalues are actual memory locations.  
-		In the code:
-			inline float& operator [] ( int index ) {	
-				return *(&x + index);					
-			}
-		To read this precicely, &x is the address of the x variable (the first in the list of x,y,z) add to that 
-		address the index as if it were an array. Then *(&x + index) dereferences that address back into the 
-		object, the float& reference returns it as an address and thus an lvalue.
-		***/
-
-		/*** Note 3.
-		The issue here is that I need to use functions in Vector from VMath which require Vector but VMath
-		also requires Vector - this is a classic circular dependency problem or sometimes known as mutual recursion.
-		To solve this it requires a forward declaration.  A "forward declaration" is the declaration of a class for which 
-		the you have not yet given a complete definition of (whateverClass.h). To do this all you need is the statement:  
-		"class VMath;"  This warns the compiler that I will be using VMath in Vector; HOWEVER, in this case, it won't work because
-		I'm using the vector.h as a totally inlined set of functions - sometimes you're just screwed 
-		***/
+/*** Note 2.
+In straight C programming, lvalues and rvalues literially means left and right assignments.  For example,
+int x = 5; x is the lvalue and 5 is the rvalue. Easy. In C++ it get a bit more tricky. The modern idea is
+rvalues are temporary vaules residing in the registers of the CPU. lvalues are actual memory locations.
+In the code:
+	inline float& operator [] ( int index ) {
+		return *(&x + index);
+	}
+To read this precicely, &x is the address of the x variable (the first in the list of x,y,z) add to that
+address the index as if it were an array. Then *(&x + index) dereferences that address back into the
+object, the float& reference returns it as an address and thus an lvalue.
+***/

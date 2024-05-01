@@ -46,7 +46,7 @@ void determinantTest();
 void slerpTest();
 void PiTestIEEE754();
 
-/// Utility print() calls for glm to Scott's math library format 
+/// Utility print() calls for glm to math library format 
 void glmPrintM4(glm::mat4  mat, const char* comment = nullptr);
 void glmPrintM3(glm::mat3  mat, const char* comment = nullptr);
 
