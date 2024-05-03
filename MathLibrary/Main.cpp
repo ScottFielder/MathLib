@@ -61,7 +61,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	PiTestIEEE754();
-	
+	quaternionTest();
 }
 
 void PiTestIEEE754() {
@@ -170,81 +170,88 @@ void hashTest(){
 }
 
 void quaternionTest() {
-	Quaternion qLookat = QMath::lookAt(Vec3(1.0f, 0.0f, 1.0f),Vec3(0.0f, 1.0f, 0.0));
-	qLookat.print();
-	
-	glm::quat glmlookat = glm::quatLookAt(normalize(vec3(1.0f, 0.0f, 1.0)), vec3(0.0f, 1.0f, 0.0));
-	glmPrintQ(glmlookat,"glm lookat");
+	//Quaternion qLookat = QMath::lookAt(Vec3(1.0f, 0.0f, 1.0f),Vec3(0.0f, 1.0f, 0.0));
+	//qLookat.print();
+	//
+	//glm::quat glmlookat = glm::quatLookAt(normalize(vec3(1.0f, 0.0f, 1.0)), vec3(0.0f, 1.0f, 0.0));
+	//glmPrintQ(glmlookat,"glm lookat");
 
 
-	Matrix3 rm = Matrix3 (MMath::rotate(-270.0f, Vec3(1.0f, 0.0f, 0.0f)));
-	rm.print("My rotation matrix");
-	Quaternion qm = QMath::toQuaternion(rm);
-	qm.print("Quaternion rotate");
-	Matrix4 meMat = MMath::toMatrix4(qm);
-	meMat.print("My matrix from Q");
+	//Matrix3 rm = Matrix3 (MMath::rotate(-270.0f, Vec3(1.0f, 0.0f, 0.0f)));
+	//rm.print("My rotation matrix");
+	//Quaternion qm = QMath::toQuaternion(rm);
+	//qm.print("Quaternion rotate");
+	//Matrix4 meMat = MMath::toMatrix4(qm);
+	//meMat.print("My matrix from Q");
 
-	mat3 glmrot = mat3(rotate(glm::radians(-270.0f), vec3(1.0f,0.0f,0.0f)));
-	glmPrintM4(glmrot, "GLM rot");
-	glm::quat glmqm= glm::quat_cast(glmrot);
-	glmPrintQ(glmqm,"glm matrix from Q");
+	//mat3 glmrot = mat3(rotate(glm::radians(-270.0f), vec3(1.0f,0.0f,0.0f)));
+	//glmPrintM4(glmrot, "GLM rot");
+	//glm::quat glmqm= glm::quat_cast(glmrot);
+	//glmPrintQ(glmqm,"glm matrix from Q");
 
-	glm::mat4 glmRot = glm::toMat4(glmqm);
-	glmPrintM4(glmRot,"glm rotation Matrix from Q");
-	
+	//glm::mat4 glmRot = glm::toMat4(glmqm);
+	//glmPrintM4(glmRot,"glm rotation Matrix from Q");
+	//
 
-	Quaternion q3 = QMath::angleAxisRotation(-90.0,Vec3(1.0f,0.0f,0.0f));
-	q3.print("my Quat");
-	glm::quat myQuaternion = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	glmPrintQ(myQuaternion, "glm Quat");
+	//Quaternion q3 = QMath::angleAxisRotation(-90.0,Vec3(1.0f,0.0f,0.0f));
+	//q3.print("my Quat");
+	//glm::quat myQuaternion = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//glmPrintQ(myQuaternion, "glm Quat");
 
 
-	
+	//
 	/// Lets say I have a unit vector along the x-axis 1,0,0. 
-	 /*Rotate 45.0 degree around the z-axis
-	 The resulting vector should be 0.70711, 0.70711, 0.0 
-	 Let's test this in every way I can think of*/
+	// /*Rotate 45.0 degree around the z-axis
+	// The resulting vector should be 0.70711, 0.70711, 0.0 
+	// Let's test this in every way I can think of*/
 	Vec3 v(1.0, 0.0, 0.0);
 	Quaternion q = QMath::angleAxisRotation(90.0,Vec3(0.0,1.0,0.0));
-	Euler e2 = EMath::toEuler(q);
-	e2.print("from Q");
-	
-	q.print("The rotation Quaternion");
-	Euler e(0.0, 0.0, 45.0);
+	Vec3 v2 = q * v * ~q;
+	v2.print("rotate");
+	//Euler e2 = EMath::toEuler(q);
+	//e2.print("from Q");
+	//
+	//q.print("The rotation Quaternion");
+	//Euler e(0.0, 0.0, 45.0);
 
-	Quaternion qe = QMath::toQuaternion(e);
-	
-	qe.print("from Euler");
-	Vec3 v2 = qe * v * ~qe;
-	v2.print("The slow way");
+	//Quaternion qe = QMath::toQuaternion(e);
+	//
+	//qe.print("from Euler");
+	//Vec3 v2 = qe * v * ~qe;
+	//v2.print("The slow way");
 
 
 
-	Vec3 v3 = QMath::rotate(v, qe);
-	v3.print("faster way");
+	//Vec3 v3 = QMath::rotate(v, qe);
+	//v3.print("faster way");
 
-	Matrix3 m3 = MMath::toMatrix3(qe);
-	Vec3 v4 = m3 * v;
-	v4.print("Mat3");
+	//Matrix3 m3 = MMath::toMatrix3(qe);
+	//Vec3 v4 = m3 * v;
+	//v4.print("Mat3");
 
-	Matrix4 m4 = MMath::toMatrix4(qe);
-	Vec3 v5 = m4 * v;
-	v5.print("Mat4");
+	//Matrix4 m4 = MMath::toMatrix4(qe);
+	//Vec3 v5 = m4 * v;
+	//v5.print("Mat4");
 
-	Quaternion q2 = QMath::angleAxisRotation(90.0, Vec3(0.0, 0.0, 1.0));
-	q2 = QMath::pow(q2, 0.5);
-	Vec3 v6 = QMath::rotate(v, q2);
-	v6.print("Using the pow function");
+	//Quaternion q2 = QMath::angleAxisRotation(90.0, Vec3(0.0, 0.0, 1.0));
+	//q2 = QMath::pow(q2, 0.5);
+	//Vec3 v6 = QMath::rotate(v, q2);
+	//v6.print("Using the pow function");
 
-	printf("Magnitude of q \n%f\n", QMath::magnitude(q));
-	Quaternion conj_q = QMath::conjugate(q);
-	conj_q.print("conjugate of q");
+	//printf("Magnitude of q \n%f\n", QMath::magnitude(q));
+	//Quaternion conj_q = QMath::conjugate(q);
+	//conj_q.print("conjugate of q");
 
-	Quaternion inv_q = QMath::inverse(q);
-	inv_q.print("inv of q");
+	//Quaternion inv_q = QMath::inverse(q);
+	//inv_q.print("inv of q");
 
-	Quaternion q4 = q * inv_q;
-	q4.print("q * q-1 is the identity");
+	//Quaternion q4 = q * inv_q;
+	//q4.print("q * q-1 is the identity");
+
+	Quaternion q1(0.0, Vec3(0.0,1.0,0.0));
+	Quaternion q2(0.0, Vec3(0.0, 0.0, 1.0));
+	Quaternion q3 = q1 * q2;
+	q3.print();
 
 }
 

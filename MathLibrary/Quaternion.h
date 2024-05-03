@@ -53,9 +53,9 @@ namespace  MATH {
 		inline const Quaternion operator * (const Quaternion& q) const {
 			Quaternion result;
 			result.w = (w * q.w) - (ijk.x * q.ijk.x) - (ijk.y * q.ijk.y) - (ijk.z * q.ijk.z);
-			result.ijk.x = (w * q.ijk.x) + (ijk.x * q.w) + (ijk.z * q.ijk.y) - (ijk.y * q.ijk.z);
-			result.ijk.y = (w * q.ijk.y) + (ijk.y * q.w) + (ijk.x * q.ijk.z) - (ijk.z * q.ijk.x);
-			result.ijk.z = (w * q.ijk.z) + (ijk.z * q.w) + (ijk.y * q.ijk.x) - (ijk.x * q.ijk.y);
+			result.ijk.x = (w * q.ijk.x) + (ijk.x * q.w) - (ijk.z * q.ijk.y) + (ijk.y * q.ijk.z);
+			result.ijk.y = (w * q.ijk.y) + (ijk.y * q.w) - (ijk.x * q.ijk.z) + (ijk.z * q.ijk.x);
+			result.ijk.z = (w * q.ijk.z) + (ijk.z * q.w) - (ijk.y * q.ijk.x) + (ijk.x * q.ijk.y);
 			return result;
 			
 		}
