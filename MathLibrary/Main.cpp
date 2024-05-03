@@ -208,8 +208,8 @@ void quaternionTest() {
 	Quaternion q = QMath::angleAxisRotation(90.0,Vec3(0.0,1.0,0.0));
 	Vec3 v2 = q * v * ~q;
 	v2.print("rotate");
-	Euler e2 = EMath::toEuler(q);
-	e2.print("from Q");
+	/*Euler e2 = EMath::toEuler(q);
+	e2.print("from Q");*/
 
 	//q.print("The rotation Quaternion");
 	//Euler e(0.0, 0.0, 45.0);
