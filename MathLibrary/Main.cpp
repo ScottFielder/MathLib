@@ -8,7 +8,6 @@
 #include "MMath.h"
 #include "QMath.h"
 #include "EMath.h"
-#include "PMath.h"
 #include "AAMath.h"
 #include "Sphere.h"
 #include "Fourier.h"
@@ -38,8 +37,6 @@ void multiplyMatrixTest();
 void viewportNDCTest();
 void moveCopyConstructors();
 void rotationIsOrthogonal();
-void planeTest();
-void planeExtractionTest();
 void quaternionTest();
 void hashTest();
 void determinantTest();
@@ -266,57 +263,6 @@ void inverseTest(){
 	
 }
 
-void planeTest(){
-	Plane floor(0.0f,-1.0f,0.0f,-10.0f);
-	Vec3 pos(0.0f,10.0f,0.0f);
-	float dist = PMath::distance(pos, floor);
-	printf("dist = %f\n", dist);
-}
-void planeExtractionTest() {
-	/*Plane p1(2.0f, -2.0f, 5.0f, 8.0f);
-	p1.print();
-	Vec3 v = Vec3(4.0f, -4.0f, 3.0f);
-	v.print();
-	float distance = PMath::distance(v, p1);
-	printf("%f vs. 6.79\n", distance);
-	Plane p2 = PMath::normalize(p1);
-	p2.print();
-	float distance2 = PMath::distance(v, p2);
-	printf("%f vs. 6.79\n", distance2);
-
-	Plane p3(1, 2, 2, -6);
-	Vec3 v3(-1, -2, -3);
-	float distance3 = PMath::distance(v3, p3);
-	printf("%f vs. %f\n", distance3, -17.0/3.0);
-	Plane p4 = PMath::normalize(p3);
-	p4.print();
-	float distance4 = PMath::distance(v3, p4);
-	printf("%f vs. %f\n", distance4, -17.0 / 3.0);*/
-
-	Matrix4 proj = MMath::perspective(52.8f, 1.0f, 1.0f, 10.0f) * MMath::lookAt(Vec3(0.0f, 0.0f, 8.0f), Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f));
-	
-	proj.print();
-
-	#define INDEX(column,row) (proj[(row-1) * 4 + (column-1)])
-	Plane near(INDEX(4,1) + INDEX(3,1),
-			INDEX(4,2) + INDEX(3,2),
-			INDEX(4,3) + INDEX(3,3),
-			INDEX(4,4) + INDEX(3,4));
-	near = PMath::normalize(near);
-	near.print();
-	Plane far(INDEX(4,1) - INDEX(3,1),
-			INDEX(4,2) - INDEX(3,2),
-			INDEX(4,3) - INDEX(3,3),
-			INDEX(4,4) - INDEX(3,4));
-	far = PMath::normalize(far);
-	far.print();
-	
-	Vec3 v5(0.0, 0.0, 0.0);
-	float distance5 = PMath::distance(v5, near);
-	printf("near %f\n", distance5);
-	distance5 = PMath::distance(v5, far);
-	printf("far %f\n", distance5);
-}
 
 
 void rotationIsOrthogonal() {

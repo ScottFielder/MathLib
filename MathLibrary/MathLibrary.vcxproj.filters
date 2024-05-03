@@ -56,13 +56,7 @@
     <ClInclude Include="Euler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Plane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sphere.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AxisAngle.h">
