@@ -2,7 +2,6 @@
 #define MMATH_H
 
 #include "Matrix.h"
-#include "Plane.h"
 #include "AxisAngle.h"
 #include "Euler.h"
 #include "Quaternion.h"

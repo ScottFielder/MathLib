@@ -69,7 +69,6 @@ void PiTestIEEE754() {
 	float pi = static_cast<float>(3.14159265358979323); /// type cast it to float 
 	printf("3.14159265358979323 vs.\n"); /// look at the value 
 	/// IEEE754 (float) can only express pi as 3.141592 accurately 
-	/// Consider precision vs accuracy
 	printf("%.18f\n",pi); 
 	printf("%.18f\n",2.0f*acos(0.0f));
 }

@@ -2,15 +2,16 @@
 #define EULER_H
 #include <iostream> 
 namespace MATH {
+	/// Euler angles are frustrating, it comes down to a set of x,y,z axis rotations but the order is 
+	/// not standardized. 3DMax allows you to choose the order of combining the rotations - crazy. 
+	/// Remember, matrix multiplication is not communitive, the order matters. Different order willgive you different
+	/// results. 
 	union Euler {
 		struct {
 			float xAxis, yAxis, zAxis; 
 		};
 		struct {
 			float pitch, yaw, roll;
-		};
-		struct {
-			float pitch, heading, bank;
 		};
 
 	public:
@@ -41,7 +42,7 @@ namespace MATH {
 		
 		/// Multiply a Euler by a scalar
 		inline const Euler  operator * (const float s) const {
-			return Euler(s*xAxis, s*yAxis, s*zAxis);
+			return Euler(s * xAxis, s * yAxis, s * zAxis);
 		}
 
 		/// Multiply a scaler by a Vec3   It's the scalar first then the Vec3

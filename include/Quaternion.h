@@ -53,19 +53,11 @@ namespace  MATH {
 		inline const Quaternion operator * (const Quaternion& q) const {
 			Quaternion result;
 			result.w = (w * q.w) - (ijk.x * q.ijk.x) - (ijk.y * q.ijk.y) - (ijk.z * q.ijk.z);
-			result.ijk.x = (w * q.ijk.x) + (ijk.x * q.w) + (ijk.z * q.ijk.y) - (ijk.y * q.ijk.z);
-			result.ijk.y = (w * q.ijk.y) + (ijk.y * q.w) + (ijk.x * q.ijk.z) - (ijk.z * q.ijk.x);
-			result.ijk.z = (w * q.ijk.z) + (ijk.z * q.w) + (ijk.y * q.ijk.x) - (ijk.x * q.ijk.y);
+			result.ijk.x = (w * q.ijk.x) + (ijk.x * q.w) - (ijk.z * q.ijk.y) + (ijk.y * q.ijk.z);
+			result.ijk.y = (w * q.ijk.y) + (ijk.y * q.w) - (ijk.x * q.ijk.z) + (ijk.z * q.ijk.x);
+			result.ijk.z = (w * q.ijk.z) + (ijk.z * q.w) - (ijk.y * q.ijk.x) + (ijk.x * q.ijk.y);
 			return result;
-			// 2022-02-12 Umer Noor edit. I think there is a bug here
-			// I'll change the Vec3 on the stack to be ijk_result and
-			// see if that helps. Compiler might be grabbing the ijk member
-			// variable in the return line rather than the stack variable
-
-			/// Perhaps too sexy
-			/// Vec3 ijk(w * q.ijk + q.w * ijk + VMath::cross(ijk, q.ijk));
-			/// Vec3 ijk_result((w * q.ijk) + (q.w * ijk) + VMath::cross(ijk, q.ijk));
-			/// return Quaternion(w * q.w - VMath::dot(ijk, q.ijk), ijk_result);
+			
 		}
 
 		inline const Quaternion& operator *= (const Quaternion& q) {
