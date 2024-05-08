@@ -4,7 +4,7 @@
 namespace MATH {
 	/// Euler angles are frustrating, it comes down to a set of x,y,z axis rotations but the order is 
 	/// not standardized. 3DMax allows you to choose the order of combining the rotations - crazy. 
-	/// Remember, matrix multiplication is not communitive, the order matters. Different order willgive you different
+	/// Remember, matrix multiplication is not communitive, the order matters. Different order will give you different
 	/// results. 
 	union Euler {
 		struct {
