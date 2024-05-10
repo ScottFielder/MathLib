@@ -1,6 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 #include <iostream>	
+#include "ConstantsConversions.h"
 #include "Vector.h"
 
 namespace  MATH {

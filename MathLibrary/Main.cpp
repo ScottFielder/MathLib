@@ -415,7 +415,7 @@ void FFT_Test(){
 	/// Change this as you will, keep it under the Nyquist frequency (1/2*step)
 	float freq = 2.0f;
 	float theta = 0.0f;
-	float step = 2.0f * M_PI / SAMPLE_SIZE;
+	float step = 2.0f * FLOAT_PI / SAMPLE_SIZE;
 
 	Randomizer r; /// I'll use this to create some noise
 

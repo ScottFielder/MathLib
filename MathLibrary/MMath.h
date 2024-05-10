@@ -1,6 +1,7 @@
 #ifndef MMATH_H
 #define MMATH_H
 
+#include "ConstantsConversions.h"
 #include "Matrix.h"
 #include "AxisAngle.h"
 #include "Euler.h"
@@ -23,19 +24,19 @@ namespace  MATH {
 			m[0] = (rotAxis.x * rotAxis.x * cosm) + cosang;
 			m[1] = (rotAxis.x * rotAxis.y * cosm) + (rotAxis.z * sinang);
 			m[2] = (rotAxis.x * rotAxis.z * cosm) - (rotAxis.y * sinang);
-			m[3] = 0.0;
+			m[3] = 0.0f;
 			m[4] = (rotAxis.x * rotAxis.y * cosm) - (rotAxis.z * sinang);
 			m[5] = (rotAxis.y * rotAxis.y * cosm) + cosang;
 			m[6] = (rotAxis.y * rotAxis.z * cosm) + (rotAxis.x * sinang);
-			m[7] = 0.0;
+			m[7] = 0.0f;
 			m[8] = (rotAxis.x * rotAxis.z * cosm) + (rotAxis.y * sinang);
 			m[9] = (rotAxis.y * rotAxis.z * cosm) - (rotAxis.x * sinang);
 			m[10] = (rotAxis.z * rotAxis.z * cosm) + cosang;
-			m[11] = 0.0;
-			m[12] = 0.0;
-			m[13] = 0.0;
-			m[14] = 0.0;
-			m[15] = 1.0;
+			m[11] = 0.0f;
+			m[12] = 0.0f;
+			m[13] = 0.0f;
+			m[14] = 0.0f;
+			m[15] = 1.0f;
 			return m;
 		}
 

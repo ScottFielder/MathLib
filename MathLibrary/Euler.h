@@ -1,6 +1,7 @@
 #ifndef EULER_H
 #define EULER_H
 #include <iostream> 
+#include "ConstantsConversions.h"
 namespace MATH {
 	/// Euler angles are frustrating, it comes down to a set of x,y,z axis rotations but the order is 
 	/// not standardized. 3DMax allows you to choose the order of combining the rotations - crazy. 

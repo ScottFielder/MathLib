@@ -1,6 +1,7 @@
 #ifndef QUATERTNION_H
 #define QUATERTNION_H
 #include <iostream>
+#include "ConstantsConversions.h"
 #include "VMath.h"
 #include "Matrix.h"
 

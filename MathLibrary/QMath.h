@@ -1,6 +1,7 @@
 #ifndef QMATH_H
 #define QMATH_H
 #include <algorithm>    // std::min, std::clamp
+#include "ConstantsConversions.h"
 #include "Quaternion.h"
 #include "Matrix.h"
 #include "Euler.h"

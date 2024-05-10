@@ -1,7 +1,8 @@
 #ifndef SPHERE_H
 #define SPHERE_H
-#include "Vector.h"
 #include <iostream>
+#include "ConstantsConversions.h"
+#include "Vector.h"
 namespace  MATH {
 	struct Sphere {
 		Vec3 center;

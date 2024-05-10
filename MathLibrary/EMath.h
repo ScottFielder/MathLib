@@ -1,6 +1,7 @@
 #ifndef EMATH_H
 #define EMATH_H
 #include <algorithm> /// std::clamp
+#include "ConstantsConversions.h"
 #include "Euler.h"
 #include "Matrix.h"
 #include "Quaternion.h"

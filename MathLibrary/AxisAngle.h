@@ -1,5 +1,6 @@
 #ifndef AXISANGLE_H
 #define AXISANGLE_H
+#include "ConstantsConversions.h"
 #include "Vector.h"
 namespace MATH{
 	struct AxisAngle {

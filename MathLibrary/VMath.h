@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include "ConstantsConversions.h"
 #include "Vector.h"
 
 namespace MATH {
