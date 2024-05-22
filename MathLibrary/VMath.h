@@ -36,10 +36,17 @@ namespace MATH {
 				0.0f);
 		}
 
+		inline static float mag(const Vec2& a) {
+			return(sqrt(a.x * a.x + a.y * a.y));
+		} 
+
 		inline static float mag(const Vec3& a) {
 			return(sqrt(a.x * a.x + a.y * a.y + a.z * a.z));
 		}
-
+		
+		inline static float mag(const Vec4& a) {
+			return(sqrt(a.x * a.x + a.y * a.y + a.z * a.z + a.w * a.w));
+		}
 
 		///  Angle-Axis rotation
 		static Vec3 rotate(const Vec3& n, float theta, const Vec3& v) {
@@ -56,6 +63,18 @@ namespace MATH {
 			}
 #endif
 			return Vec3(a.x / magnitude, a.y / magnitude, a.z / magnitude);
+		}
+
+		/// Return a normalized Vec2
+		static Vec2 normalize(const Vec2& a) {
+			float magnitude = sqrt(a.x * a.x + a.y * a.y);
+#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 	
+			if (magnitude < VERY_SMALL) {
+				std::string errorMsg = __FILE__ + __LINE__;
+				throw errorMsg.append(": Divide by nearly zero! ");
+			}
+#endif
+			return Vec2(a.x / magnitude, a.y / magnitude);
 		}
 
 		/// Reflect off a normal  

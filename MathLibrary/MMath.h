@@ -362,9 +362,6 @@ namespace  MATH {
 
 		}
 
-		union DualQuat;
-		static Matrix4 MMath::toMatrix4(const DualQuat& dq);
-
 	};
 
 }

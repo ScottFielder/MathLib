@@ -335,8 +335,98 @@ namespace  MATH {
 		///////////////////////////////////////////////////////////
 		/// Operator overloads (see note 1 at the end of this file)
 		///////////////////////////////////////////////////////////
-		inline Vec2& operator = (const Vec2& v) {
+		/// Just a little utility to populate a vector
+		void set(float x_, float y_) {
+			x = x_; y = y_;;
+		}
+		
+		/// An assignment operator   
+		const Vec2& operator = (const Vec2& v) {
 			set(v.x, v.y);
+			return *this;
+		}
+
+		/// Now we can use the Vec2 like an array but we'll need two overloads
+		const float operator [] (int index) const {  /// This one is for reading the Vec2 as if where an array
+			return *(&x + index);
+		}
+
+		float& operator [] (int index) {	/// This one is for writing to the Vec3 as if where an array.  
+			return *(&x + index);			/// See note 2 at the end of this file about lvalues and rvalues
+		}
+
+		/// Add two Vec2s
+		const Vec2 operator + (const Vec2 v) const {
+			return Vec2(x + v.x, y + v.y);
+		}
+
+		/// Add a Vec3 to itself
+		const Vec2& operator += (const Vec2& v) {
+			x += v.x;
+			y += v.y;
+			return *this;
+		}
+
+		/// Take the negative of a Vec2
+		const Vec2 operator - () const {
+			return Vec2(-x, -y);
+		}
+
+		/// Subtract two Vec3s
+		const Vec2 operator - (const Vec2& v) const {
+			return Vec2(x - v.x, y - v.y);
+		}
+
+		/// Subtract a Vec 3 from itself
+		const Vec2& operator -= (const Vec2& v) {
+			x -= v.x;
+			y -= v.y;
+			return *this;
+		}
+
+		/// Multiply a Vec2 by a scalar
+		inline const Vec2 operator * (const float s) const {
+			return Vec2(s * x, s * y);
+		}
+
+
+		/// Multiply a scaler by a Vec2  It's the scalar first then the Vec2
+		/// Overloaded and a friend, It's the only way to make it work with a scalar first.
+		/// Friends are tricky, look them up. 
+		friend Vec2 operator * (const float s, const Vec2& v) {
+			return v * s;
+		}
+
+		/// Multiply a Vec2 by a scalar and assign it to itself
+		Vec2& operator *= (const float s) {
+			x *= s;
+			y *= s;
+			return *this;
+		}
+
+
+		/// Divide by a scalar - Watch for divide by zero issues
+		const Vec2 operator / (const float s) const {
+#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero 
+			if (fabs(s) < VERY_SMALL) {
+				std::string errorMsg = __FILE__ + __LINE__;
+				throw errorMsg.append(": Divide by nearly zero ");
+			}
+#endif
+			float r = 1.0f / s;
+			return *this * r;
+		}
+
+
+		inline Vec2& operator /= (const float s) {
+#ifdef _DEBUG  /// If in debug mode let's worry about divide by zero or nearly zero!!! 
+			if (std::fabs(s) < VERY_SMALL) {
+				std::string errorMsg = __FILE__ + __LINE__;
+				throw errorMsg.append(": Divide by nearly zero! ");
+			}
+#endif // DEBUG
+			float r = 1.0f / s;
+			*this *= r;
 			return *this;
 		}
 
