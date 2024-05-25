@@ -331,14 +331,6 @@ namespace  MATH {
 		inline Vec2(const Vec2& v) {
 			set(v.x, v.y);
 		}
-
-		///////////////////////////////////////////////////////////
-		/// Operator overloads (see note 1 at the end of this file)
-		///////////////////////////////////////////////////////////
-		/// Just a little utility to populate a vector
-		void set(float x_, float y_) {
-			x = x_; y = y_;;
-		}
 		
 		/// An assignment operator   
 		const Vec2& operator = (const Vec2& v) {
@@ -391,8 +383,7 @@ namespace  MATH {
 
 
 		/// Multiply a scaler by a Vec2  It's the scalar first then the Vec2
-		/// Overloaded and a friend, It's the only way to make it work with a scalar first.
-		/// Friends are tricky, look them up. 
+		/// Overloaded and a friend, It's the only way to make it work with a scalar first. 
 		friend Vec2 operator * (const float s, const Vec2& v) {
 			return v * s;
 		}
