@@ -9,10 +9,10 @@ namespace MATH {
 	/// results. 
 	union Euler {
 		struct {
-			float xAxis, yAxis, zAxis; 
+			float pitch, yaw, roll;
 		};
 		struct {
-			float pitch, yaw, roll;
+			float xAxis, yAxis, zAxis; 
 		};
 
 	public:
@@ -21,8 +21,8 @@ namespace MATH {
 			xAxis = xAxis_; yAxis = yAxis_; zAxis = zAxis_;
 		}
 
-		inline Euler(float xAxis, float yAxis, float zAxis) {
-			set(xAxis, yAxis, zAxis);
+		inline Euler(float pitch, float yaw, float roll) {
+			set(pitch, yaw, roll);
 		}
 
 		/// Here's a set of constructors
