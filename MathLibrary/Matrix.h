@@ -177,7 +177,7 @@ namespace  MATH {
 
 	};
 
-	/********************************************************************************************/
+	
 	class Matrix3 {
 		/// 3x3 matrix - COLUMN MAJOR 
 		///	0	3	6			
@@ -259,13 +259,7 @@ namespace  MATH {
 			return *this;
 		}
 
-		/// Extracts the inner 3x3 from a 4x4 matrix
-		/// using the 3x3 constructor
-		inline Matrix3(const Matrix4& m_) {
-			m[0] = m_[0]; m[1] = m_[1]; m[2] = m_[2];
-			m[3] = m_[4]; m[4] = m_[5]; m[5] = m_[6];
-			m[6] = m_[8]; m[7] = m_[9]; m[8] = m_[10];
-		}
+		
 
 		/// Extracts the inner 3x3 from a 4x4 matrix
 		/// The upper 3x3 of a 4x4 contains only scale and rotation components. 
@@ -278,6 +272,13 @@ namespace  MATH {
 			return *this;
 		}
 
+		/// Extracts the inner 3x3 from a 4x4 matrix
+		/// using the 3x3 constructor
+		inline Matrix3(const Matrix4& m_) {
+			m[0] = m_[0]; m[1] = m_[1]; m[2] = m_[2];
+			m[3] = m_[4]; m[4] = m_[5]; m[5] = m_[6];
+			m[6] = m_[8]; m[7] = m_[9]; m[8] = m_[10];
+		}
 
 		/// These allow me convert from type Matrix to const float * without issues
 		inline operator float* () { return static_cast<float*>(&m[0]); }
@@ -306,13 +307,8 @@ namespace  MATH {
 				m[1], m[4], m[7],
 				m[2], m[5], m[8]);
 		}
-
-
-
-
 	};
 
-	/********************************************************************************************/
 	class Matrix2 {
 		/// 2x2 matrix - COLUMN MAJOR 
 		///	0	2			
