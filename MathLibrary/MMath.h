@@ -214,7 +214,7 @@ namespace  MATH {
 			return lookAt(eye.x, eye.y, eye.z, at.x, at.y, at.z, up.x, up.y, up.z);
 		}
 
-		/// Take the transpose of a matrix, swap row with columns 
+		/// Take the transpose of a Matrix4, swap row with columns 
 		/// Tested 2016
 		static Matrix4 transpose(const Matrix4& m) {
 			return Matrix4(m[0], m[4], m[8], m[12],
@@ -224,10 +224,20 @@ namespace  MATH {
 
 		}
 
+		/// Take the transpose of a Matrix3, swap row with columns 
 		static Matrix3 transpose(const Matrix3& m) {
 			return Matrix3(m[0], m[3], m[6],
-				m[1], m[4], m[7],
-				m[2], m[5], m[8]);
+							m[1], m[4], m[7],
+							m[2], m[5], m[8]);
+
+		}
+
+		static float determinate(const Matrix4& m) {
+			float a = m[0] * (m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10]);
+			float b = m[1] * (-m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10]);
+			float c = m[2] * (m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9]);
+			float d = m[3] * (-m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9]);
+			return a + b + c + d;
 		}
 
 		static float determinate(const Matrix3& m) {
@@ -237,12 +247,8 @@ namespace  MATH {
 			return a - b + c;
 		}
 
-		static float determinate(const Matrix4& m) {
-			float a = m[0] * (m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10]);
-			float b = m[1] * (-m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10]);
-			float c = m[2] * (m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9]);
-			float d = m[3] * (-m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9]);
-			return a + b + c + d;
+		static float determinate(const Matrix2& m) {
+			return m[0] * m[3] - m[3] * m[1];
 		}
 
 		static Matrix3 inverse(const Matrix3& m) {
@@ -316,6 +322,11 @@ namespace  MATH {
 			return inverseM;
 		}
 
+		
+		static Matrix4 toMatrix4(const AxisAngle& axisAngle_) {
+			return MMath::rotate(axisAngle_.angle, axisAngle_.axis.x, axisAngle_.axis.y, axisAngle_.axis.z);
+		}
+
 		/// Convert Eular angles to a 3x3 rotation matrix
 		static Matrix3 toMatrix3(const Euler& e) {
 			/// Note: If you want to multiply xaxis, yaxis,zaix in that order. I think
@@ -325,18 +336,6 @@ namespace  MATH {
 				MMath::rotate(e.yAxis, Vec3(0.0f, 1.0f, 0.0f)));
 			return m;
 		}
-
-		static Matrix4 toMatrix4(const AxisAngle& axisAngle_) {
-			return MMath::rotate(axisAngle_.angle, axisAngle_.axis.x, axisAngle_.axis.y, axisAngle_.axis.z);
-		}
-
-		static Matrix3 toMatrix3(const Quaternion& q) {
-			/// This is the fastest way I know...
-			return Matrix3((1.0f - 2.0f * q.ijk.y * q.ijk.y - 2.0f * q.ijk.z * q.ijk.z), (2.0f * q.ijk.x * q.ijk.y + 2.0f * q.ijk.z * q.w), (2.0f * q.ijk.x * q.ijk.z - 2.0f * q.ijk.y * q.w),
-				(2.0f * q.ijk.x * q.ijk.y - 2.0f * q.ijk.z * q.w), (1.0f - 2.0f * q.ijk.x * q.ijk.x - 2.0f * q.ijk.z * q.ijk.z), (2.0f * q.ijk.y * q.ijk.z + 2.0f * q.ijk.x * q.w),
-				(2.0f * q.ijk.x * q.ijk.z + 2.0f * q.ijk.y * q.w), (2.0f * q.ijk.y * q.ijk.z - 2 * q.ijk.x * q.w), (1.0f - 2.0f * q.ijk.x * q.ijk.x - 2.0f * q.ijk.y * q.ijk.y));
-		}
-
 
 		static Matrix4 toMatrix4(const Quaternion& q) {
 			/// This is the fastest way I know...
@@ -359,7 +358,12 @@ namespace  MATH {
 			//			q.ijk.y,  -q.ijk.x,   q.w,  -q.ijk.z,
 			//			-q.ijk.x,   q.ijk.y,   q.ijk.z,   q.w);
 			//return m1 * m2;
+		}
 
+		static Matrix3 toMatrix3(const Quaternion& q) {
+			return Matrix3((1.0f - 2.0f * q.ijk.y * q.ijk.y - 2.0f * q.ijk.z * q.ijk.z), (2.0f * q.ijk.x * q.ijk.y + 2.0f * q.ijk.z * q.w), (2.0f * q.ijk.x * q.ijk.z - 2.0f * q.ijk.y * q.w),
+				(2.0f * q.ijk.x * q.ijk.y - 2.0f * q.ijk.z * q.w), (1.0f - 2.0f * q.ijk.x * q.ijk.x - 2.0f * q.ijk.z * q.ijk.z), (2.0f * q.ijk.y * q.ijk.z + 2.0f * q.ijk.x * q.w),
+				(2.0f * q.ijk.x * q.ijk.z + 2.0f * q.ijk.y * q.w), (2.0f * q.ijk.y * q.ijk.z - 2 * q.ijk.x * q.w), (1.0f - 2.0f * q.ijk.x * q.ijk.x - 2.0f * q.ijk.y * q.ijk.y));
 		}
 
 	};

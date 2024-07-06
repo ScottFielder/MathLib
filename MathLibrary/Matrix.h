@@ -307,6 +307,75 @@ namespace  MATH {
 				m[2], m[5], m[8]);
 		}
 
+
+
+
+	};
+
+	/********************************************************************************************/
+	class Matrix2 {
+		/// 2x2 matrix - COLUMN MAJOR 
+		///	0	2			
+		///	1	3	 
+	
+	private:
+		float  m[4];
+	public:
+		/// Constuctors
+		inline Matrix2(float xx, float yx,
+			float xy, float yy) {
+			m[0] = xx;   m[2] = xy;   
+			m[1] = yx;   m[3] = yy;  
+			
+		}
+
+		/// Create the unit matrix probably the most common way of initializing a matrix
+		inline Matrix2() {
+			loadIdentity();
+		}
+
+
+		/// Now I can use the class itself as an array.
+		/// When overloading the [] operator you need to declair one
+		/// to read the array and one to write to the array. 
+		///  Returns a const rvalue
+		inline const float operator [] (int index) const {
+			return *(m + index);
+		}
+
+		/// This one is for writing to the class as if where an array 
+		/// it returns a lvalue
+		inline float& operator [] (int index) {
+			return *(m + index);
+		}
+
+		inline Matrix2& operator = (const Matrix2& m_) {
+			this->m[0] = m_[0]; 
+			this->m[1] = m_[1]; 
+			this->m[2] = m_[2];
+			this->m[3] = m_[3]; 
+			return *this;
+		}
+
+		/// Creates the identity matrix
+		inline void loadIdentity() {
+			m[0] = 1.0f;  m[2] = 0.0f;
+			m[1] = 0.0f;  m[3] = 1.0f;
+			
+		}
+
+		/// These allow me convert from type Matrix to const float* without issues
+		inline operator float* () { return static_cast<float*>(&m[0]); }
+		inline operator const float* () const { return static_cast<const float*>(&m[0]); }
+
+
+		/// Print the Matrix2 in column form, add a comment if you wish
+		inline void print(const char* comment = nullptr) const {
+			if (comment) printf("%s\n", comment);
+			printf("%1.4f %1.4f\n%1.4f %1.4f\n\n",
+				m[0], m[2],
+				m[1], m[3]);
+		}
 	};
 }
 
