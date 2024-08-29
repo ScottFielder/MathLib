@@ -91,7 +91,6 @@
     <ClInclude Include="QMath.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Randomizer.h" />
-    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VMath.h" />
   </ItemGroup>
