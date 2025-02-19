@@ -21,15 +21,20 @@ namespace MATH {
 			return(a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w);
 		}
 
-		/// Calulate the cross product with Vec3
+		/// Calculate the cross product with Vec3
 		inline static const Vec3 cross(const Vec3& a, const Vec3& b) {
 			return Vec3(a.y * b.z - a.z * b.y,
 				a.z * b.x - a.x * b.z,
 				a.x * b.y - a.y * b.x);
 		}
 
-		/// Calulate the cross product with Vec4
-		#pragma message("This is wrong: Vec4 cross(const Vec4& a, const Vec4& b)")
+		/// Calculate the cross product with Vec4
+#ifdef _DEBUG 
+	#pragma message("Warning: Vec4 cross(const Vec4& a, const Vec4& b) read my comments")
+#endif
+		/// There is no cross product in 4D space (there is one in 7D space). I have included it here with 
+		/// the assumption that the Vec4 is really just a Vec3 ignoring the w component. This not uncommon 
+		/// in computer graphics but uncool in pure mathematics
 		inline static const Vec4 cross(const Vec4& a, const Vec4& b) {
 			return Vec4(a.y * b.z - a.z * b.y,
 				a.z * b.x - a.x * b.z,
