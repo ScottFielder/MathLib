@@ -6,6 +6,8 @@
 #include "AxisAngle.h"
 #include "Euler.h"
 #include "Quaternion.h"
+#include "DualQuat.h"
+#include "DQMath.h"
 namespace  MATH {
 
 	class MMath {
@@ -345,7 +347,7 @@ namespace  MATH {
 				0.0f, 0.0f, 0.0f, 1.0f);
 
 			/// ... but this is the coolest. My way is just a bit faster on single processor machines,
-			/// this method is faster on parallel multicore machines. Multicore can calc m1 and m2
+			/// this method is faster on parallel multicore machines. Multicore can calculate m1 and m2
 			/// on separate threads. Just saying. 
 
 			//Matrix4 m1( q.w,  q.ijk.z,  -q.ijk.y,  q.ijk.x,
@@ -366,6 +368,14 @@ namespace  MATH {
 				(2.0f * q.ijk.x * q.ijk.z + 2.0f * q.ijk.y * q.w), (2.0f * q.ijk.y * q.ijk.z - 2 * q.ijk.x * q.w), (1.0f - 2.0f * q.ijk.x * q.ijk.x - 2.0f * q.ijk.y * q.ijk.y));
 		}
 
+
+		static Matrix4 toMatrix4(const MATHEX::DualQuat &dq){
+			Quaternion r = MATHEX::DQMath::getRotation(dq);
+			Vec3 t = MATHEX::DQMath::getTranslation(dq);
+			Matrix4 m = toMatrix4(r);
+			m.print("DQ to Mat4");
+			return m;
+		}
 	};
 
 }

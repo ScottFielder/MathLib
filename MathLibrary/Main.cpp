@@ -41,6 +41,7 @@ void hashTest();
 void determinantTest();
 void slerpTest();
 void PiTestIEEE754();
+void InverseUmerTest();
 
 /// Utility print() calls for glm to math library format 
 void glmPrintM4(glm::mat4  mat, const char* comment = nullptr);
@@ -59,10 +60,25 @@ using namespace std;
 
 
 int main(int argc, char* argv[]) {
-	PiTestIEEE754();
-	quaternionTest();
+
+	InverseUmerTest();
 }
 
+void InverseUmerTest(){
+	Matrix4 translate = MMath::translate(5, 5, 5);
+	Matrix4 invTranslate = MMath::inverse(translate);
+	invTranslate.print();
+	Matrix4 rotate = MMath::rotate(45.0, Vec3(1, 0, 0));
+	Matrix4 rotate2 = MMath::rotate(-45.0, Vec3(1, 0, 0));
+	Matrix4 rotate3 = MMath::transpose(rotate);
+
+	Matrix4 invRotate = MMath::inverse(rotate);
+
+	invRotate.print();
+	rotate2.print();
+	rotate3.print();
+
+}
 void PiTestIEEE754() {
 	/// This is the value of pi accurate to 18 digits past the decimal point
 	float pi = static_cast<float>(3.14159265358979323); /// type cast it to float 
