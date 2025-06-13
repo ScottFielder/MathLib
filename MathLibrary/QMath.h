@@ -99,9 +99,9 @@ namespace MATH{
 		}
 
 
-		static Quaternion angleAxisRotation(const float degrees, const Vec3& axis) {
+		static Quaternion angleAxisRotation(const float angleDeg, const Vec3& axis) {
 			Vec3 rotationAxis = VMath::normalize(axis);
-			float theta = degrees * DEGREES_TO_RADIANS;
+			float theta = angleDeg * DEGREES_TO_RADIANS;
 			float cosVal = cos(theta / 2.0f);
 			float sinVal = sin(theta / 2.0f);
 			Quaternion result = Quaternion(cosVal, rotationAxis * sinVal);

@@ -369,12 +369,8 @@ namespace  MATH {
 		}
 
 
-		static Matrix4 toMatrix4(const MATHEX::DualQuat &dq){
-			Quaternion r = MATHEX::DQMath::getRotation(dq);
-			Vec3 t = MATHEX::DQMath::getTranslation(dq);
-			Matrix4 m = toMatrix4(r);
-			m.print("DQ to Mat4");
-			return m;
+		static Matrix4 toMatrix4(const MATHEX::DualQuat &dq) {
+			
 		}
 	};
 
