@@ -57,7 +57,9 @@ using namespace glm;
 using namespace std;
 
 
-
+// Figuring out coloured text and background using https://medium.com/@vitorcosta.matias/print-coloured-texts-in-console-a0db6f589138
+const string PASSED{ "\033[42mPASSED\033[m" };
+const string FAILED{ "\033[41mFAILED\033[m" };
 
 int main(int argc, char* argv[]) {
 

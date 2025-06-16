@@ -6,7 +6,6 @@
 #include "AxisAngle.h"
 #include "Euler.h"
 #include "Quaternion.h"
-#include "DualQuat.h"
 #include "DQMath.h"
 namespace  MATH {
 
@@ -370,7 +369,7 @@ namespace  MATH {
 
 
 		static Matrix4 toMatrix4(const MATHEX::DualQuat &dq) {
-			
+			return MATH::MMath::translate(MATHEX::DQMath::getTranslation(dq)) * MATH::MMath::toMatrix4(MATHEX::DQMath::getRotation(dq));
 		}
 	};
 
