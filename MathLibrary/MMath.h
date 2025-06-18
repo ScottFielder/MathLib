@@ -367,7 +367,9 @@ namespace  MATH {
 				(2.0f * q.ijk.x * q.ijk.z + 2.0f * q.ijk.y * q.w), (2.0f * q.ijk.y * q.ijk.z - 2 * q.ijk.x * q.w), (1.0f - 2.0f * q.ijk.x * q.ijk.x - 2.0f * q.ijk.y * q.ijk.y));
 		}
 
-
+		// Convert a dual quaternion to a 4x4 matrix
+		// Turns out that the move below is called Euclidean Factorisation, and it decomposes a motor into a rotation around the origin followed by a translation.
+		// REFERENCE: https://enkimute.github.io/LookMaNoMatrices/
 		static Matrix4 toMatrix4(const MATHEX::DualQuat &dq) {
 			return MATH::MMath::translate(MATHEX::DQMath::getTranslation(dq)) * MATH::MMath::toMatrix4(MATHEX::DQMath::getRotation(dq));
 		}

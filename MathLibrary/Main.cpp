@@ -50,7 +50,11 @@ void glmPrintM3(glm::mat3  mat, const char* comment = nullptr);
 void glmPrintQ(glm::quat q, const char* comment = nullptr);
 void glmPrintV3(glm::vec3 v, const char* comment = nullptr);
 void glmPrintV4(glm::vec4 v, const char* comment = nullptr);
-
+bool Compare(Vec3 v1, glm::vec3 v2, float epsilon);
+bool Compare(Vec4 v1, glm::vec4 v2, float epsilon);
+bool Compare(const Matrix3 m1, const glm::mat3 m2, float epsilon);
+bool Compare(const Matrix4 m1, const glm::mat4 m2, float epsilon);
+bool Compare(Quaternion q1, glm::quat q2, float epsilon);
 
 using namespace MATH;
 using namespace glm;
@@ -63,7 +67,7 @@ const string FAILED{ "\033[41mFAILED\033[m" };
 
 int main(int argc, char* argv[]) {
 
-	InverseUmerTest();
+	LookAtTest();
 }
 
 void InverseUmerTest(){
@@ -276,11 +280,14 @@ void inverseTest(){
 	Matrix4 rot = MMath::rotate(90.0f, Vec3(0.0f,1.0f,0.0f));
 	Matrix4 invRot = MMath::inverse(rot);
 	Matrix4 product = rot * invRot;
-	product.print();
+	
 
 	Matrix3 rot3 = MMath::rotate(45.0f, Vec3(0.0f, 1.0f, 0.0f));
 	Matrix3 invRot3 = MMath::inverse(rot);
 	Matrix3 product3 = rot * invRot;
+	
+	
+	product.print();
 	product3.print();
 
 	
@@ -407,17 +414,41 @@ void UnOrthoTest() {
 
 
 void LookAtTest(){
+	const string name = " LookAtTest";
 	glm::mat4 mt = glm::lookAt(glm::vec3(0.0f, 0.0f, -10.0f),
-								glm::vec3(0.0f, 0.0f, 0.0f), 
-								glm::vec3(1.0f, 0.0f, 0.0f));
+								glm::vec3(0.0f, 1.0f, 1.0f), 
+								glm::vec3(0.0f, 1.0f, 0.0f));
 	
-	Vec3 v = Vec3(0, 0, 0);
-	Matrix4 lookat = MMath::lookAt(Vec3(0.0,0.0,-10.0), Vec3(0,0,0), Vec3(1,0,0));
-	
-	lookat.print();
-	glmPrintM4(mt);
-	Vec3 v1 = lookat * v;
-	v1.print();
+	Matrix4 lookat = MMath::lookAt(Vec3(0.0f,0.0f,-10.0f), 
+								Vec3(0.0f,1.0f,1.0f), 
+								Vec3(0.0f,1.0f,0.0f));
+	bool test0 = Compare(lookat, mt, 1.0e-6);
+
+	if(! test0) {
+		lookat.print("my Lookat");
+		glmPrintM4(mt, "glm's Lookat");
+	}
+
+	mt = glm::lookAt(glm::vec3(0.0f, 0.0f, -10.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f));
+
+	lookat = MMath::lookAt(Vec3(0.0f, 0.0f, -10.0f),
+		Vec3(1.0f, 1.0f, 1.0f),
+		Vec3(0.0f, 1.0f, 0.0f));
+
+	bool test1 = Compare(lookat, mt, 1.0e-6);
+	if (!test1) {
+		lookat.print("my Lookat");
+		glmPrintM4(mt, "glm's Lookat");
+	}
+
+	if (test0 && test1) {
+		std::cout << PASSED + name << "\n";
+	}
+	else {
+		std::cout << FAILED + name << "\n";
+	}
 }
 
 
@@ -543,4 +574,52 @@ void glmPrintV3(glm::vec3 v, const char* comment) {
 void glmPrintV4(glm::vec4 v, const char* comment) {
 	if (comment) printf("%s\n", comment);
 	printf("%1.4f %1.4f %1.4f %1.4f\n", v[0], v[1], v[2], v[3]);
+}
+
+bool Compare(Vec3 v1, glm::vec3 v2, float epsilon) {
+	for (int i = 0; i < 3; ++i) {
+		if (std::fabs(v1[i] - v2[i]) > epsilon) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Compare(Vec4 v1, glm::vec4 v2, float epsilon) {
+	for (int i = 0; i < 4; ++i) {
+		if (std::fabs(v1[i] - v2[i]) > epsilon) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Compare(Matrix3 m1, glm::mat3 m2,  float epsilon){
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (std::fabs(m1[i * 3 + j] - m2[i][j]) > epsilon) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool Compare(Matrix4 m1, glm::mat4 m2, float epsilon) {
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			if (std::fabs(m1[i * 4 + j] - m2[i][j]) > epsilon) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool Compare(Quaternion q1, glm::quat q2, float epsilon){
+	for (int i = 0; i < 4; ++i) {
+		if (std::fabs(q1[i] - q2[i]) > epsilon) {
+			return false;
+		}
+	}
 }
