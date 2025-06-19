@@ -172,12 +172,56 @@ namespace  MATH {
 			return MMath::scale(scale.x, scale.y, scale.z);
 		}
 
-		///Tested Feb 1 2013 SSF
+		//UN I found an implementation of the lookAt matrix in this book:
+		//https://learning.oreilly.com/library/view/fundamentals-of-computer/9781000426359/xhtml/C13_chapter8.xhtml#sec8_1
+
 		static Matrix4 lookAt(float eyeX, float eyeY, float eyeZ,
 			float atX, float atY, float atZ,
 			float upX, float upY, float upZ) {
 
-			Vec3 at(atX, atY, atZ);
+				Vec3 at(atX, atY, atZ);
+				Vec3 up(upX, upY, upZ);
+				Vec3 eye(eyeX, eyeY, eyeZ);
+
+
+				// Using implementaion from "Fundamentals of Computer Graphics, 5th Edition", Ch.8
+				// Gaze direction g is from the eye pos to whatever I'm looking at
+				Vec3 g = at - eye;
+				Vec3 w = VMath::normalize(-g);
+				Vec3 u = VMath::normalize(VMath::cross(up, w));
+				Vec3 v = VMath::cross(w, u);
+
+				Matrix4 R;
+				R[0] = u.x;
+				R[1] = v.x;
+				R[2] = w.x;
+				R[3] = 0.0f;
+
+				R[4] = u.y;
+				R[5] = v.y;
+				R[6] = w.y;
+				R[7] = 0.0f;
+
+				R[8] = u.z;
+				R[9] = v.z;
+				R[10] = w.z;
+				R[11] = 0.0f;
+
+				R[12] = 0.0f;
+				R[13] = 0.0f;
+				R[14] = 0.0f;
+				R[15] = 1.0f;
+
+				Matrix4 T = translate(-eye);
+
+				// Book says we can think of the lookAt matrix as
+				// first moving the eye to the origin
+				// then aligning u, v, w with x, y, z
+				return  R * T;
+			}
+
+		    /// Scott's old version 
+			/*Vec3 at(atX, atY, atZ);
 			Vec3 up(upX, upY, upZ);
 			Vec3 eye(eyeX, eyeY, eyeZ);
 
@@ -209,7 +253,7 @@ namespace  MATH {
 			result[15] = 1.0;
 
 			return result;
-		}
+		}*/
 
 		static Matrix4 lookAt(const Vec3& eye, const Vec3& at, const Vec3& up) {
 			return lookAt(eye.x, eye.y, eye.z, at.x, at.y, at.z, up.x, up.y, up.z);
