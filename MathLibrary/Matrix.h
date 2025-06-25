@@ -241,7 +241,7 @@ namespace  MATH {
 		}
 
 		/// Multiply two 3x3 matricies. 
-		/// In the Vec4 class I unroll the loop and seek efficiency everywhere,
+		/// In the Vec4 class I unrolled the loop and seek efficiency everywhere,
 		/// probably never matters in reality. 
 		/// Here, I just do with just loops. 
 		inline const Matrix3 operator*(const Matrix3& n) const {

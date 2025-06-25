@@ -28,7 +28,7 @@
 
 void FFT_Test();
 void LookAtTest();
-void inverseTest();
+void InverseTestMat4();
 void UnOrthoTest();
 void RotationTest();
 void Vec3MultiplyMat4Test();
@@ -50,11 +50,19 @@ void glmPrintM3(glm::mat3  mat, const char* comment = nullptr);
 void glmPrintQ(glm::quat q, const char* comment = nullptr);
 void glmPrintV3(glm::vec3 v, const char* comment = nullptr);
 void glmPrintV4(glm::vec4 v, const char* comment = nullptr);
-bool Compare(Vec3 v1, glm::vec3 v2, float epsilon);
-bool Compare(Vec4 v1, glm::vec4 v2, float epsilon);
-bool Compare(const Matrix3 m1, const glm::mat3 m2, float epsilon);
-bool Compare(const Matrix4 m1, const glm::mat4 m2, float epsilon);
-bool Compare(Quaternion q1, glm::quat q2, float epsilon);
+
+/// Utility Compare() calls for testing 
+bool Compare(const Vec3 &v1, const glm::vec3 &v2, float epsilon);
+bool Compare(const Vec4& v1, const glm::vec4& v2, float epsilon);
+
+bool Compare(const Matrix3& m1, const glm::mat3& m2, float epsilon);
+bool Compare(const Matrix3& m1, const Matrix3& m2, float epsilon);
+
+bool Compare(const Matrix4& m1, const Matrix4& m2, float epsilon);
+bool Compare(const Matrix4& m1, const glm::mat4& m2, float epsilon);
+
+bool Compare(const Quaternion& q1, const Quaternion& q2, float epsilon);
+bool Compare(const Quaternion &q1, const glm::quat &q2, float epsilon);
 
 using namespace MATH;
 using namespace glm;
@@ -66,14 +74,15 @@ const string PASSED{ "\033[42mPASSED\033[m" };
 const string FAILED{ "\033[41mFAILED\033[m" };
 
 int main(int argc, char* argv[]) {
-
+	InverseTestMat4();
 	LookAtTest();
+	
 }
 
 void InverseUmerTest(){
 	Matrix4 translate = MMath::translate(5, 5, 5);
 	Matrix4 invTranslate = MMath::inverse(translate);
-	invTranslate.print();
+	//invTranslate.print();
 	Matrix4 rotate = MMath::rotate(45.0, Vec3(1, 0, 0));
 	Matrix4 rotate2 = MMath::rotate(-45.0, Vec3(1, 0, 0));
 	Matrix4 rotate3 = MMath::transpose(rotate);
@@ -276,19 +285,29 @@ void quaternionTest() {
 }
 
 
-void inverseTest(){
+void InverseTestMat4(){
+	const string name = " InverseTest";
 	Matrix4 rot = MMath::rotate(90.0f, Vec3(0.0f,1.0f,0.0f));
 	Matrix4 invRot = MMath::inverse(rot);
-	Matrix4 product = rot * invRot;
+	Matrix4 product4 = rot * invRot;
+	bool test0 = Compare(product4, Matrix4(), 1.0e-6);
 	
 
 	Matrix3 rot3 = MMath::rotate(45.0f, Vec3(0.0f, 1.0f, 0.0f));
 	Matrix3 invRot3 = MMath::inverse(rot);
 	Matrix3 product3 = rot * invRot;
+	bool test1 = Compare(product3, Matrix3(), 1.0e-6);
+
+	if (test0 && test1) {
+		std::cout << PASSED + name << "\n";
+	}
+	else {
+		std::cout << FAILED + name << "\n";
+		product4.print("should have been the Identity matrix");
+		product3.print();
+	}
 	
 	
-	product.print();
-	product3.print();
 
 	
 }
@@ -424,11 +443,6 @@ void LookAtTest(){
 								Vec3(0.0f,1.0f,0.0f));
 	bool test0 = Compare(lookat, mt, 1.0e-6);
 
-	if(! test0) {
-		lookat.print("my Lookat");
-		glmPrintM4(mt, "glm's Lookat");
-	}
-
 	mt = glm::lookAt(glm::vec3(0.0f, 0.0f, -10.0f),
 		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f));
@@ -438,16 +452,15 @@ void LookAtTest(){
 		Vec3(0.0f, 1.0f, 0.0f));
 
 	bool test1 = Compare(lookat, mt, 1.0e-6);
-	if (!test1) {
-		lookat.print("my Lookat");
-		glmPrintM4(mt, "glm's Lookat");
-	}
+	
 
 	if (test0 && test1) {
 		std::cout << PASSED + name << "\n";
 	}
 	else {
 		std::cout << FAILED + name << "\n";
+		lookat.print("my Lookat");
+		glmPrintM4(mt, "glm's Lookat");
 	}
 }
 
@@ -576,7 +589,7 @@ void glmPrintV4(glm::vec4 v, const char* comment) {
 	printf("%1.4f %1.4f %1.4f %1.4f\n", v[0], v[1], v[2], v[3]);
 }
 
-bool Compare(Vec3 v1, glm::vec3 v2, float epsilon) {
+bool Compare(const Vec3 &v1, const glm::vec3 &v2, float epsilon) {
 	for (int i = 0; i < 3; ++i) {
 		if (std::fabs(v1[i] - v2[i]) > epsilon) {
 			return false;
@@ -585,7 +598,7 @@ bool Compare(Vec3 v1, glm::vec3 v2, float epsilon) {
 	return true;
 }
 
-bool Compare(Vec4 v1, glm::vec4 v2, float epsilon) {
+bool Compare(const Vec4 &v1, const glm::vec4 &v2, float epsilon) {
 	for (int i = 0; i < 4; ++i) {
 		if (std::fabs(v1[i] - v2[i]) > epsilon) {
 			return false;
@@ -594,7 +607,17 @@ bool Compare(Vec4 v1, glm::vec4 v2, float epsilon) {
 	return true;
 }
 
-bool Compare(Matrix3 m1, glm::mat3 m2,  float epsilon){
+bool Compare(const Matrix3 &m1, const Matrix3 &m2, float epsilon) {
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (std::fabs(m1[i * 3 + j] - m2[i * 3 + j]) > epsilon) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+bool Compare(const Matrix3& m1, const glm::mat3& m2, float epsilon){
 	for (int i = 0; i < 3; ++i) {
 		for (int j = 0; j < 3; ++j) {
 			if (std::fabs(m1[i * 3 + j] - m2[i][j]) > epsilon) {
@@ -605,7 +628,20 @@ bool Compare(Matrix3 m1, glm::mat3 m2,  float epsilon){
 	return true;
 }
 
-bool Compare(Matrix4 m1, glm::mat4 m2, float epsilon) {
+bool Compare(const Matrix4& m1, const Matrix4& m2, float epsilon) {
+	m2.print();
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			if (std::fabs(m1[i * 4 + j] - m2[i * 4 + j]) > epsilon) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+
+bool Compare(const Matrix4 &m1, const glm::mat4 &m2, float epsilon) {
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
 			if (std::fabs(m1[i * 4 + j] - m2[i][j]) > epsilon) {
@@ -616,7 +652,15 @@ bool Compare(Matrix4 m1, glm::mat4 m2, float epsilon) {
 	return true;
 }
 
-bool Compare(Quaternion q1, glm::quat q2, float epsilon){
+bool Compare(const Quaternion& q1, const Quaternion& q2, float epsilon){
+	for (int i = 0; i < 4; ++i) {
+		if (std::fabs(q1[i] - q2[i]) > epsilon) {
+			return false;
+		}
+	}
+}
+
+bool Compare(const Quaternion &q1, glm::quat &q2, float epsilon){
 	for (int i = 0; i < 4; ++i) {
 		if (std::fabs(q1[i] - q2[i]) > epsilon) {
 			return false;
