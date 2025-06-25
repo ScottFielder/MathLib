@@ -59,7 +59,7 @@ namespace  MATH {
 
 
 		/// This creates a transform from Normalized Device Coordinates (NDC) to 
-		/// screen coordinates. OpenGL uses NDC as the base corrdinate system.			 
+		/// screen coordinates. OpenGL uses NDC as the base coordinate system.			 
 		///	              ------------------------------
 		///	             /|                           /|
 		///	            / |                          / |
@@ -101,7 +101,7 @@ namespace  MATH {
 			/***
 			m[0] = float(width_)/2.0f;
 			m[5] = -float(height_)/2.0f;
-			m[10] =  maxZ - minZ;
+			m[10] = maxZ - minZ;
 			m[12] = float(width_)/2.0f;
 			m[13] = float(height_)/2.0f;
 			m[14] = minZ;
@@ -148,7 +148,7 @@ namespace  MATH {
 
 		/// At first glance, it might look like this matrix 
 		/// is written left-handed or transposed, it has not. 
-		/// Remember how memory is layed out. It is still column based.  
+		/// Remember how memory is laid out. It is still column based.  
 		/// Tested Feb 1 2013 SSF  
 		static Matrix4 translate(float x_, float y_, float z_) {
 			return Matrix4(1.0f, 0.0f, 0.0f, 0.0f,

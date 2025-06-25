@@ -38,10 +38,8 @@ void moveCopyConstructors();
 void rotationIsOrthogonal();
 void quaternionTest();
 void hashTest();
-void determinantTest();
+void DeterminantTest();
 void slerpTest();
-void PiTestIEEE754();
-void InverseUmerTest();
 
 /// Utility print() calls for glm to math library format 
 void glmPrintM4(glm::mat4  mat, const char* comment = nullptr);
@@ -52,6 +50,8 @@ void glmPrintV3(glm::vec3 v, const char* comment = nullptr);
 void glmPrintV4(glm::vec4 v, const char* comment = nullptr);
 
 /// Utility Compare() calls for testing 
+bool Compare(float f1, float f2, float epsilon);
+
 bool Compare(const Vec3 &v1, const glm::vec3 &v2, float epsilon);
 bool Compare(const Vec4& v1, const glm::vec4& v2, float epsilon);
 
@@ -76,31 +76,7 @@ const string FAILED{ "\033[41mFAILED\033[m" };
 int main(int argc, char* argv[]) {
 	InverseTestMat4();
 	LookAtTest();
-	
-}
-
-void InverseUmerTest(){
-	Matrix4 translate = MMath::translate(5, 5, 5);
-	Matrix4 invTranslate = MMath::inverse(translate);
-	//invTranslate.print();
-	Matrix4 rotate = MMath::rotate(45.0, Vec3(1, 0, 0));
-	Matrix4 rotate2 = MMath::rotate(-45.0, Vec3(1, 0, 0));
-	Matrix4 rotate3 = MMath::transpose(rotate);
-
-	Matrix4 invRotate = MMath::inverse(rotate);
-
-	invRotate.print();
-	rotate2.print();
-	rotate3.print();
-
-}
-void PiTestIEEE754() {
-	/// This is the value of pi accurate to 18 digits past the decimal point
-	float pi = static_cast<float>(3.14159265358979323); /// type cast it to float 
-	printf("3.14159265358979323 vs.\n"); /// look at the value 
-	/// IEEE754 (float) can only express pi as 3.141592 accurately 
-	printf("%.18f\n",pi); 
-	printf("%.18f\n",2.0f*acos(0.0f));
+	DeterminantTest();
 }
 
 void slerpTest() {
@@ -119,24 +95,33 @@ void slerpTest() {
 
 }
 
-void determinantTest(){
+void DeterminantTest(){
+	const string name = " DeterminantTest";
 	/// These vectors should return a value of 30 - it does.
 	/// Swap any two and the sign should change - it does
 	Matrix4 m4;
-	m4.setColumn(Matrix4::Colunm::zero,Vec4(1, 0, 2, -1));
-	m4.setColumn(Matrix4::Colunm::one, Vec4(3, 0, 0, 5));
-	m4.setColumn(Matrix4::Colunm::two, Vec4(2, 1, 4, -3));
-	m4.setColumn(Matrix4::Colunm::three,Vec4(1, 0, 5, 0));
-	
-	printf("%f\n",MMath::determinate(m4));
-
-	/// deternimant of the identity matrix = 1.0 - it is 
-	Matrix3 m3;
-	printf("%f\n", MMath::determinate(m3));
+	m4.setColumn(Matrix4::Colunm::zero,Vec4(1.0f, 0.0f, 2.0f, -1.0f));
+	m4.setColumn(Matrix4::Colunm::one, Vec4(3.0f, 0.0f, 0.0f, 5.0f));
+	m4.setColumn(Matrix4::Colunm::two, Vec4(2.0f, 1.0f, 4.0f, -3.0f));
+	m4.setColumn(Matrix4::Colunm::three,Vec4(1.0f, 0.0f, 5.0f, 0.0f));
+	bool test0 = Compare(MMath::determinate(m4), 30.0f, 1.0e-6);
 
 
-	Matrix4 perspectiveM = MMath::perspective(45.0f, (16.0f / 9.0f), 0.5f, 100.0f);
-	printf("determinant of the perspective Matrix %f\n", MMath::determinate(perspectiveM));
+	m4.setColumn(Matrix4::Colunm::zero, Vec4(3.0f, 0.0f, 0.0f, 5.0f));/// Swap this 
+	m4.setColumn(Matrix4::Colunm::one, Vec4(1.0f, 0.0f, 2.0f, -1.0f));/// with this
+	m4.setColumn(Matrix4::Colunm::two, Vec4(2.0f, 1.0f, 4.0f, -3.0f));
+	m4.setColumn(Matrix4::Colunm::three, Vec4(1.0f, 0.0f, 5.0f, 0.0f));
+	bool test1 = Compare(MMath::determinate(m4), -30.0f, 1.0e-6);
+
+	/// deternimant of the identity matrix = 1.0 
+	Matrix3 m2;
+	bool test2 = MMath::determinate(m2);
+	if( test0 && test1 && test2){
+		std::cout << PASSED + name << "\n";
+	}
+	else {
+			std::cout << FAILED + name << "\n";	
+	}
 }
 
 void hashTest(){
@@ -230,9 +215,9 @@ void quaternionTest() {
 
 	//
 	/// Lets say I have a unit vector along the x-axis 1,0,0. 
-	// /*Rotate 45.0 degree around the z-axis
-	// The resulting vector should be 0.70711, 0.70711, 0.0 
-	// Let's test this in every way I can think of*/
+	///*Rotate 45.0 degree around the z-axis
+	/// The resulting vector should be 0.70711, 0.70711, 0.0 
+	/// Let's test this in every way I can think of
 	Vec3 v(1.0, 0.0, 0.0);
 	Quaternion q = QMath::angleAxisRotation(90.0,Vec3(0.0,1.0,0.0));
 	Vec3 v2 = q * v * ~q;
@@ -589,6 +574,14 @@ void glmPrintV4(glm::vec4 v, const char* comment) {
 	printf("%1.4f %1.4f %1.4f %1.4f\n", v[0], v[1], v[2], v[3]);
 }
 
+bool Compare(float  f1, float f2, float epsilon) {
+	for (int i = 0; i < 3; ++i) {
+		if (std::fabs(f1 - f2) > epsilon) {
+			return false;
+		}
+	}
+	return true;
+}
 bool Compare(const Vec3 &v1, const glm::vec3 &v2, float epsilon) {
 	for (int i = 0; i < 3; ++i) {
 		if (std::fabs(v1[i] - v2[i]) > epsilon) {
@@ -629,7 +622,6 @@ bool Compare(const Matrix3& m1, const glm::mat3& m2, float epsilon){
 }
 
 bool Compare(const Matrix4& m1, const Matrix4& m2, float epsilon) {
-	m2.print();
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
 			if (std::fabs(m1[i * 4 + j] - m2[i * 4 + j]) > epsilon) {
