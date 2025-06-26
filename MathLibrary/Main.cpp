@@ -37,7 +37,7 @@ void viewportNDCTest();
 void moveCopyConstructors();
 void rotationIsOrthogonal();
 void quaternionTest();
-void hashTest();
+void HashTest();
 void DeterminantTest();
 void slerpTest();
 
@@ -77,6 +77,7 @@ int main(int argc, char* argv[]) {
 	InverseTestMat4();
 	LookAtTest();
 	DeterminantTest();
+	HashTest();
 }
 
 void slerpTest() {
@@ -124,63 +125,62 @@ void DeterminantTest(){
 	}
 }
 
-void hashTest(){
+void HashTest(){
+	const string name = " HashTest";
 	Vec3 v1(1.1f, 1.0f, 1.0f);
-	Vec3 v2(1.1f, 0.0f, 1.0f);
-	Vec3 v3(1.1f, 0.0f, 1.0f);
-	Vec3 v4(1.1f, 1.0f, 1.0f);
+	Vec3 v2(1.1f, 1.0f, 1.0f);
+
+	/// operator == is overloaded to do a binary comparison of two Vec3s
+	bool test0 = (v1 == v2);
 
 	vec3 glmV1(1.1f, 1.0f, 1.0f);
 	vec3 glmV2(1.1f, 1.0f, 1.0f);
-	bool t = (v1 == v2);
-	bool glmt = (glmV1 == glmV2);
+	
+	bool test1 = (glmV1 == glmV2);
+
 	hash<Vec3> hasher;
 	size_t myHash = hasher(v1);
-	
+	 
 	hash<vec3> glmHasher;
 	size_t glmHash = glmHasher(glmV1);
-	printf("%x vs. %x\n", myHash, glmHash);
+	bool test3 = (myHash == glmHash);
+	
 
+	/// Test if I can do a hash test between vertices using an unordered_map count() function  
 	std::unordered_map<Vec3, uint32_t> uniqueVerts;
-	static uint32_t count = 0;
+	uint32_t count = 0;
 	if (uniqueVerts.count(v1) == 0) {
 		uniqueVerts[v1] = count;
 		++count;
 	}
-	printf("%d\n", uniqueVerts.size());
 
 	if (uniqueVerts.count(v2) == 0) {
 		uniqueVerts[v2] = count;
 		++count;
 	}
-	printf("%d\n", uniqueVerts.size());
-
-	if (uniqueVerts.count(v3) == 0) {
-		uniqueVerts[v3] = count;
-		++count;
-	}
-	printf("%d\n", uniqueVerts.size());
 
 
-	if (uniqueVerts.count(v4) == 0) {
-		uniqueVerts[v4] = count;
-		++count;
-	}
-	printf("%d\n\n", uniqueVerts.size());
-
-	/////////// glm ///////////////
+	/// Compare it with glm
 	std::unordered_map<vec3, uint32_t> glmUniqueVerts;
-	static uint32_t glmCount = 0;
+	uint32_t glmCount = 0;
 	if(glmUniqueVerts.count(glmV1) == 0){
 		glmUniqueVerts[glmV1] = glmCount;
 		++glmCount;
 	}
-	printf("%d\n", glmUniqueVerts.size());
+
 	if (glmUniqueVerts.count(glmV2) == 0) {
 		glmUniqueVerts[glmV2] = glmCount;
 		++glmCount;
 	}
-	printf("%d\n", glmUniqueVerts.size());
+	
+	bool test2 = (count == glmCount);
+
+	if (test0 && test1 && test2 ) {
+		std::cout << PASSED + name << "\n";
+	}
+	else {
+		std::cout << FAILED + name << "\n";
+	}
 }
 
 void quaternionTest() {
